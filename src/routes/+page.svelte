@@ -16,6 +16,8 @@
     let query: string = "";
     let disableDailyRelease = true;
 
+    let isLoading = false;
+
     $: if (disableDailyRelease) {
         filtered = animeList.filter((anime) => {
             return !commonDailyRelease.some((release) => {
@@ -29,9 +31,12 @@
     }
 
     async function getAnimeTorrents(query: string) {
+        animeList = [];
+        isLoading = true;
         const res = await axios.get("/api/anime", {
             params: { q: query },
         });
+        isLoading = false;
 
         animeList = res.data;
     }
@@ -51,7 +56,7 @@
 
 <Toast />
 
-<div class="flex flex-col gap-3 items-center my-5">
+<div class="flex flex-col gap-3 items-center my-5 mt-10">
     <form class="w-1/2" on:submit={() => getAnimeTorrents(query)}>
         <input
             bind:value={query}
@@ -67,35 +72,40 @@
 </div>
 
 <main class="flex overflow-x-auto justify-center">
-    <table class="table w-[80%]">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Size</th>
-                <th>Date</th>
-                <th>S / L</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each filtered as item (item["nyaa:infoHash"][0])}
+    {#if isLoading}
+        <span class="loading loading-ring loading-lg"></span>
+    {/if}
+    {#if filtered.length}
+        <table class="table w-[80%]">
+            <thead>
                 <tr>
-                    <td class="text-ellipsis">{item.title[0]}</td>
-                    <td>{item["nyaa:size"][0]}</td>
-                    <td>{item.pubDate[0].replace("-0000", "")}</td>
-                    <td
-                        >{item["nyaa:seeders"][0]} / {item[
-                            "nyaa:leechers"
-                        ][0]}</td
-                    >
-                    <td class="flex flex-col gap-3">
-                        <button
-                            on:click={() => downloadTorrent(item)}
-                            class="btn">Download</button
-                        >
-                    </td>
+                    <th>Title</th>
+                    <th>Size</th>
+                    <th>Date</th>
+                    <th>S / L</th>
+                    <th>Actions</th>
                 </tr>
-            {/each}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {#each filtered as item (item["nyaa:infoHash"][0])}
+                    <tr>
+                        <td class="text-ellipsis">{item.title[0]}</td>
+                        <td>{item["nyaa:size"][0]}</td>
+                        <td>{item.pubDate[0].replace("-0000", "")}</td>
+                        <td
+                            >{item["nyaa:seeders"][0]} / {item[
+                                "nyaa:leechers"
+                            ][0]}</td
+                        >
+                        <td class="flex flex-col gap-3">
+                            <button
+                                on:click={() => downloadTorrent(item)}
+                                class="btn">Download</button
+                            >
+                        </td>
+                    </tr>
+                {/each}
+            </tbody>
+        </table>
+    {/if}
 </main>

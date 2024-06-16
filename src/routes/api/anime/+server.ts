@@ -13,9 +13,10 @@ export const GET: RequestHandler = async ({ url }) => {
     },
   });
 
-  const data: AnimeItem[] = (await parseStringPromise(res.data))["rss"][
-    "channel"
-  ][0]["item"];
+  const data: AnimeItem[] | undefined = (await parseStringPromise(res.data))[
+    "rss"
+  ]["channel"][0]["item"];
+  if (!data) return json([]);
 
   const sorted = data.sort((a, b) => {
     return parseInt(b["nyaa:seeders"][0]) - parseInt(a["nyaa:seeders"][0]);
