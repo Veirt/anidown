@@ -14,33 +14,13 @@ export const GET: RequestHandler = async ({ url }) => {
     },
   });
 
-  const commonDailyRelease = [
-    "SubsPlease",
-    "Erai-raws",
-    "HorribleSubs",
-    "ToonsHub",
-    /[\[\(][wW]eekly[\]\)]/,
-  ];
+  const data: AnimeItem[] = (await parseStringPromise(res.data))["rss"][
+    "channel"
+  ][0]["item"];
 
-  const disableDailyRelease = url.searchParams.get("disableDailyRelease");
+  const sorted = data.sort((a, b) => {
+    return parseInt(b["nyaa:seeders"][0]) - parseInt(a["nyaa:seeders"][0]);
+  });
 
-  const data = await parseStringPromise(res.data);
-  const filtered: AnimeItem[] = data["rss"]["channel"][0]["item"].filter(
-    (item: AnimeItem) => {
-      const title = item["title"][0];
-
-      // true is string.
-      if (disableDailyRelease == "true") {
-        for (const release of commonDailyRelease) {
-          if (title.match(release)) {
-            return false;
-          }
-        }
-      }
-
-      return true;
-    },
-  );
-
-  return json(filtered);
+  return json(sorted);
 };
