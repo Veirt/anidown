@@ -3,6 +3,9 @@
     import { notifications } from "$lib/store/notifications";
     import axios from "axios";
 
+    import { page } from "$app/stores";
+    import { onMount } from "svelte";
+
     const commonDailyRelease = [
         "SubsPlease",
         "Erai-raws",
@@ -13,10 +16,14 @@
 
     let animeList: AnimeItem[] = [];
     let filtered: AnimeItem[] = [];
-    let query: string = "";
+    let query: string = $page.url.searchParams.get("query") || "";
     let disableDailyRelease = true;
 
     let isLoading = false;
+
+    onMount(() => {
+        if (query) getAnimeTorrents(query);
+    });
 
     $: if (disableDailyRelease) {
         filtered = animeList.filter((anime) => {
@@ -60,6 +67,7 @@
     <form class="w-1/2" on:submit={() => getAnimeTorrents(query)}>
         <input
             bind:value={query}
+            name="query"
             type="text"
             placeholder="Search for anime..."
             class="w-full input input-bordered"
