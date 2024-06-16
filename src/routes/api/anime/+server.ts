@@ -4,7 +4,6 @@ import { parseStringPromise } from "xml2js";
 
 export const GET: RequestHandler = async ({ url }) => {
   const q = url.searchParams.get("q");
-  // https://nyaa.si/&page=rss&c=1_2&s=seeders&o=desc&q=made%20in%20abyss
   const res = await axios.get("https://nyaa.si", {
     params: {
       f: 0, // not sure

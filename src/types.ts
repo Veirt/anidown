@@ -3,7 +3,7 @@ interface AnimeItem {
   link: string[];
   guid: {
     _: string;
-  };
+  }[];
   pubDate: string[];
   "nyaa:seeders": string[];
   "nyaa:leechers": string[];

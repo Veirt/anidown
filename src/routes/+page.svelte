@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Toast from "$lib/components/Toast.svelte";
+    import { notifications } from "$lib/store/notifications";
     import axios from "axios";
 
     const commonDailyRelease = [
@@ -33,23 +35,36 @@
 
         animeList = res.data;
     }
+
+    async function downloadTorrent(item: AnimeItem) {
+        const res = await axios.post("/api/download", {
+            item,
+        });
+
+        if (res.data.success) {
+            notifications.success(res.data.message, 2000);
+        } else {
+            notifications.danger(res.data.message, 2000);
+        }
+    }
 </script>
 
-<div class="flex justify-center my-5">
-    <form on:submit={() => getAnimeTorrents(query)}>
+<Toast />
+
+<div class="flex flex-col gap-3 items-center my-5">
+    <form class="w-1/2" on:submit={() => getAnimeTorrents(query)}>
         <input
             bind:value={query}
             type="text"
             placeholder="Search for anime..."
-            class="w-full max-w-sm input input-bordered"
+            class="w-full input input-bordered"
         />
     </form>
+    <section class="w-1/2">
+        <input bind:checked={disableDailyRelease} type="checkbox" />
+        Disable Daily Release
+    </section>
 </div>
-
-<section class="">
-    <input bind:checked={disableDailyRelease} type="checkbox" />
-    Disable Daily Release
-</section>
 
 <main class="flex overflow-x-auto justify-center">
     <table class="table w-[80%]">
@@ -74,8 +89,10 @@
                         ][0]}</td
                     >
                     <td class="flex flex-col gap-3">
-                        <button class="btn">Torrent</button>
-                        <button class="btn">Magnet</button>
+                        <button
+                            on:click={() => downloadTorrent(item)}
+                            class="btn">Download</button
+                        >
                     </td>
                 </tr>
             {/each}
