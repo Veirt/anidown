@@ -10,7 +10,7 @@
             class:alert-success={notification.type === "success"}
             class:alert-error={notification.type === "danger"}
             animate:flip
-            class="mx-10 w-1/3 rounded alert"
+            class="flex flex-row mt-5 w-[80%] rounded md:w-1/3 alert"
             transition:fly={{ y: 30 }}
         >
             {#if notification.type === "success"}

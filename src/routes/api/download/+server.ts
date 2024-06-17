@@ -24,9 +24,16 @@ export const POST: RequestHandler = async ({ request }) => {
     return json({ success: false, message: "Magnet link not found." });
   }
 
-  const res = await client.addMagnet(magnet, {
-    category: "shoko",
-  });
+  try {
+    const res = await client.addMagnet(magnet, {
+      category: "shoko",
+    });
+    return json({ success: res, message: "Torrent download has started." });
+  } catch (err) {
+    if (err instanceof Error) {
+      return json({ success: false, message: err.message });
+    }
 
-  return json({ success: res, message: "Torrent download started." });
+    return json({ success: false, message: err });
+  }
 };
