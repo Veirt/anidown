@@ -1,5 +1,6 @@
 services:
   anidown:
+    container_name: anidown
     image: ghcr.io/veirt/anidown:latest
     build: .
     ports:
