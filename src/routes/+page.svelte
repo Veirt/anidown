@@ -1,7 +1,7 @@
 <script lang="ts">
     import Toast from "$lib/components/Toast.svelte";
     import { notifications } from "$lib/store/notifications";
-    import axios from "axios";
+    import ky from "ky";
 
     import { page } from "$app/stores";
     import { onMount } from "svelte";
@@ -42,24 +42,29 @@
     async function getAnimeTorrents(query: string) {
         animeList = [];
         isLoading = true;
-        const res = await axios.get("/api/anime", {
-            params: { q: query },
-        });
+        const data = await ky
+            .get("/api/anime", {
+                searchParams: new URLSearchParams({ q: query }),
+            })
+            .json<AnimeItem[]>();
         isLoading = false;
 
-        animeList = res.data;
+        animeList = data;
     }
 
     async function downloadTorrent(item: AnimeItem) {
-        const res = await axios.post("/api/download", {
-            item,
-        });
+        const data = await ky
+            .post("/api/download", {
+                json: { item },
+            })
+            .json<{ success: boolean; message: string }>();
 
-        if (res.data.success) {
-            notifications.success(res.data.message, 2000);
-        } else {
-            notifications.danger(res.data.message, 2000);
+        if (data.success) {
+            notifications.success(data.message, 2000);
+            return;
         }
+
+        notifications.danger(data.message, 2000);
     }
 </script>
 
