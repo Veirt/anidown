@@ -70,7 +70,7 @@
             name="query"
             type="text"
             placeholder="Search for anime..."
-            class="w-full input input-bordered"
+            class="w-full focus:outline-none input input-bordered"
         />
         <button class="btn" type="submit"
             ><svg

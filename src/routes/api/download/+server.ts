@@ -1,14 +1,10 @@
-import { QBittorrent } from "@ctrl/qbittorrent";
 import { json, type RequestHandler } from "@sveltejs/kit";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import ky from "ky";
 
 // hardcoded. nobody is going to use this anyway
-const client = new QBittorrent({
-  baseUrl: "http://qb.veirt.moe",
-  username: "",
-  password: "",
-});
+const QBITTORRENT_URL = "http://qb.veirt.moe";
 
 export const POST: RequestHandler = async ({ request }) => {
   const item: AnimeItem = (await request.json()).item;
@@ -24,11 +20,17 @@ export const POST: RequestHandler = async ({ request }) => {
     return json({ success: false, message: "Magnet link not found." });
   }
 
+  const formData = new FormData();
+  formData.append("category", "shoko");
+  formData.append("urls", item.link[0]);
+
   try {
-    const res = await client.addMagnet(magnet, {
-      category: "shoko",
+    await ky.post(`${QBITTORRENT_URL}/api/v2/torrents/add`, {
+      body: formData,
+      headers: {},
     });
-    return json({ success: res, message: "Torrent download has started." });
+
+    return json({ success: true, message: "Torrent download has started." });
   } catch (err) {
     if (err instanceof Error) {
       return json({ success: false, message: err.message });

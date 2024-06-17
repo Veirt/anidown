@@ -1,0 +1,7 @@
+services:
+  anidown:
+    image: ghcr.io/veirt/anidown:latest
+    build: .
+    ports:
+      - 8452:8452
+    restart: unless-stopped
