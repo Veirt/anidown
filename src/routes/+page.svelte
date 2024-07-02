@@ -145,7 +145,9 @@
             {#each filtered as item (item["nyaa:infoHash"][0])}
                 <div class="w-[90%] rounded shadow-xl card bg-neutral">
                     <div class="card-body">
-                        <h2 class="text-xs font-bold card-title">
+                        <h2
+                            class="text-xs font-bold break-all card-title text-pretty"
+                        >
                             {item.title[0]}
                         </h2>
                         <p class="text-xs">{item["nyaa:size"][0]}</p>
