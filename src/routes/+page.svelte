@@ -120,7 +120,9 @@
             <tbody>
                 {#each filtered as item (item["nyaa:infoHash"][0])}
                     <tr>
-                        <td class="max-w-xs font-bold">{item.title[0]}</td>
+                        <td class="max-w-xs font-bold break-words text-pretty"
+                            >{item.title[0]}</td
+                        >
                         <td>{item["nyaa:size"][0]}</td>
                         <td>{item.pubDate[0].replace("-0000", "")}</td>
                         <td
