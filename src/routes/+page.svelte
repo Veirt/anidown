@@ -100,14 +100,14 @@
     </section>
 </div>
 
-<main>
-    <div class="flex justify-center">
-        {#if isLoading}
+<main class="flex justify-center">
+    {#if isLoading}
+        <div class="flex justify-center">
             <span class="loading loading-ring loading-lg"></span>
-        {/if}
-    </div>
+        </div>
+    {/if}
     {#if filtered.length}
-        <table class="hidden justify-center sm:table table-xs sm:table-md">
+        <table class="hidden justify-center sm:table !w-[90%]">
             <thead>
                 <tr>
                     <th>Title</th>
@@ -120,7 +120,8 @@
             <tbody>
                 {#each filtered as item (item["nyaa:infoHash"][0])}
                     <tr>
-                        <td class="max-w-xs font-bold break-words text-pretty"
+                        <td
+                            class="max-w-sm font-bold break-words min-w-sm text-pretty"
                             >{item.title[0]}</td
                         >
                         <td>{item["nyaa:size"][0]}</td>
