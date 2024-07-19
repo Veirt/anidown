@@ -20,6 +20,7 @@
     let disableDailyRelease = true;
 
     let isLoading = false;
+    let fileDropModal: HTMLDialogElement;
 
     onMount(() => {
         getAnimeTorrents(query);
@@ -66,7 +67,58 @@
 
         notifications.danger(data.message, 2000);
     }
+
+    async function downloadTorrentWithFile(dataTransfer: DataTransfer | null) {
+        if (!dataTransfer) return;
+        const formData = new FormData();
+
+        for (const file of dataTransfer.files) {
+            if (file.type !== "application/x-bittorrent") {
+                notifications.danger(
+                    `${file.name} is not a torrent file!`,
+                    2000,
+                );
+                return;
+            }
+            formData.append(
+                "torrents[]",
+                new Blob([file], { type: file.type }),
+            );
+        }
+
+        const data = await ky
+            .post("/api/download", {
+                body: formData,
+            })
+            .json<{ success: boolean; message: string }>();
+
+        if (data.success) {
+            notifications.success(data.message, 2000);
+            return;
+        }
+
+        notifications.danger(data.message, 2000);
+    }
 </script>
+
+<svelte:body
+    on:dragenter|stopPropagation|preventDefault={() => {
+        fileDropModal.showModal();
+    }}
+    on:dragover|stopPropagation|preventDefault={() => {}}
+    on:drop|stopPropagation|preventDefault={(e) => {
+        fileDropModal.close();
+
+        downloadTorrentWithFile(e.dataTransfer);
+    }}
+/>
+
+<dialog bind:this={fileDropModal} class="modal">
+    <div class="modal-box">
+        <h3 class="text-lg font-bold">Drop file anywhere</h3>
+        <p class="py-4">Drop file anywhere to upload torrent file.</p>
+    </div>
+</dialog>
 
 <div class="flex flex-col gap-3 items-center my-10">
     <form class="flex sm:w-1/2" on:submit={() => getAnimeTorrents(query)}>

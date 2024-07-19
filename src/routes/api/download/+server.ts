@@ -5,11 +5,21 @@ import ky from "ky";
 const QBITTORRENT_URL = "http://qb.veirt.moe";
 
 export const POST: RequestHandler = async ({ request }) => {
-  const item: AnimeItem = (await request.json()).item;
+  const request2 = request.clone()
+
+  let data;
+  let torrents: FormDataEntryValue | null = null;
+
+  try {
+    data = await request.json();
+  } catch (err) {
+    torrents = (await request2.formData()).get("torrents[]");
+  }
 
   const formData = new FormData();
   formData.append("category", "shoko");
-  formData.append("urls", item.link[0]);
+  if (data?.item) formData.append("urls", data.item.link[0]);
+  if (torrents) formData.append("torrents[]", torrents)
 
   try {
     await ky.post(`${QBITTORRENT_URL}/api/v2/torrents/add`, {
