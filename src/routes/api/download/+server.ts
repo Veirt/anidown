@@ -1,8 +1,8 @@
+import { env } from "$env/dynamic/private";
 import { json, type RequestHandler } from "@sveltejs/kit";
 import ky from "ky";
 
-// hardcoded. nobody is going to use this anyway
-const QBITTORRENT_URL = "http://qb.veirt.moe";
+const QBITTORRENT_URL = env.QBITTORRENT_URL;
 
 export const POST: RequestHandler = async ({ request }) => {
   let data;

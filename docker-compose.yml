@@ -2,6 +2,8 @@ services:
   anidown:
     container_name: anidown
     image: ghcr.io/veirt/anidown:latest
+    env:
+      - QBITTORRENT_URL=https://qb.veirt.web.id
     build: .
     ports:
       - 8452:8452
